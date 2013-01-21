@@ -35,6 +35,10 @@ jQuery.noConflict();
 
   if(window.location.toString().indexOf('rf/res') != 0) {
 
+    // если нет удаленных постов то ничего делать не надо
+    if($('.abbrev span a').length == 0)
+      return false;
+
     // ссылка на удаленные посты
     var $abbrev_href = $('.abbrev span a').attr('href')
 
