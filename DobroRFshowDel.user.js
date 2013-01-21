@@ -1,13 +1,16 @@
 // ==UserScript==
 // @name           DobroRFshowDel
+// @description    Показывает скрытые ОП-ом посты прямо в треде
 // @namespace      dobro
+// @version        0.1
+// @author         lain-dono
+// @license        GPL
 // @include        https://dobrochan.ru/rf/res/*
 // @include        https://dobrochan.org/rf/res/*
 // @include        https://dobrochan.com/rf/res/*
 // @include        http://dobrochan.ru/rf/res/*
 // @include        http://dobrochan.org/rf/res/*
 // @include        http://dobrochan.com/rf/res/*
-// @description    Показывает скрытые ОП-ом посты прямо в треде
 // ==/UserScript==
 
 // Подгружаем JQuery во имя добра
