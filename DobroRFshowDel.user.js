@@ -63,12 +63,8 @@ jQuery.noConflict();
             // те что после нинужны
             if($el.attr('id').replace('post_','') > id)
               return false;
-            // почему не вставляется просто $el? потому и хак
-            var $new = $('<table>', {
-              class: $el.attr('class'),
-              id: $el.attr('id'),
-              html: $el.html(),
-            }).insertBefore($this);
+
+            $this.before($el.clone());
 
             $el.remove(); // ну всё... вырезем!
 
@@ -81,12 +77,7 @@ jQuery.noConflict();
         $html.find('.post').each(function() {
           var $el = $(this);
 
-          // опять этот грязный хак
-          var $new = $('<table>', {
-            class: $el.attr('class'),
-            id: $el.attr('id'),
-            html: $el.html(),
-          }).insertAfter(last);
+          $this.after($el.clone());
 
           last = $el; // это мы на память
         });
