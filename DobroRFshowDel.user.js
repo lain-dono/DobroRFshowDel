@@ -4,90 +4,63 @@
 // @namespace      dobro
 // @version        0.1
 // @author         lain-dono
-// @license        GPL
+// @license        WTFPL
 // @include        https://dobrochan.ru/rf/res/*
 // @include        https://dobrochan.org/rf/res/*
 // @include        https://dobrochan.com/rf/res/*
 // @include        http://dobrochan.ru/rf/res/*
 // @include        http://dobrochan.org/rf/res/*
 // @include        http://dobrochan.com/rf/res/*
+// @include        https://dobrochan.ru/rf/mad/*
+// @include        https://dobrochan.org/rf/mad/*
+// @include        https://dobrochan.com/rf/mad/*
+// @include        http://dobrochan.ru/rf/mad/*
+// @include        http://dobrochan.org/rf/mad/*
+// @include        http://dobrochan.com/rf/mad/*
+// @description    Показывает скрытые ОП-ом посты прямо в треде
 // ==/UserScript==
 
-// Подгружаем JQuery во имя добра
-function addJQuery(callback) {
-  var script = document.createElement("script");
-  script.setAttribute("src", "http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js");
-  script.addEventListener('load', function() {
-    var script = document.createElement("script");
-    script.textContent = "(" + callback.toString() + ")();";
-    document.body.appendChild(script);
-  }, false);
-  document.body.appendChild(script);
-}
-
-// собсно сам код здесь
+// El Psy Congroo!
 function main() {
-
-// совместимость с hanabira.js и его jquery версии 1.3.2
-jQuery.noConflict();
-
-(function($){
-
-  if(window.location.toString().indexOf('rf/res') != 0) {
-
-    // если нет удаленных постов то ничего делать не надо
-    if($('.abbrev span a').length == 0)
-      return false;
-
-    // ссылка на удаленные посты
-    var $abbrev_href = $('.abbrev span a').attr('href')
-
-    // получаем посты
-    $.ajax({
-      url: $abbrev_href,
-      type: 'get',
-      dataType: 'html',
-      dataFilter: function(html) {
-        //вырезем мусор из полученной страницы
-        return $(html).find('.thread');
-      },
-      success: function($html) {
-
-        // сначала проходимся по постам
-        $('.thread .replypost').each(function(index){
-          var $this = $(this);
-          var id = $this.attr('id').replace('post_','');
-          // нам нужны те, что перед этим постом
-          $html.find('.post').each(function() {
-            var $el = $(this);
-            // те что после нинужны
-            if($el.attr('id').replace('post_','') > id)
-              return false;
-
-            $this.before($el.clone());
-
-            $el.remove(); // ну всё... вырезем!
-
-          });
-        }); // \thread.each
-
-        var last = $('.thread .replypost:last');
-
-        // то что осталось в конец
-        $html.find('.post').each(function() {
-          var $el = $(this);
-
-          $this.after($el.clone());
-
-          last = $el; // это мы на память
-        });
-
-      } // \success-func
-    }); // \$.ajax
-
-  } // \if(window.locat....)
-
-})(jQuery);
+    // нам нужен тоько rf и mad
+    if(window.location.toString().indexOf('rf/res') == 0
+    || window.location.toString().indexOf('rf/mad') == 0) return;
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        $abbrev = document.querySelector('.abbrev span a');
+        // а вдруг оп ничего не удалял
+        if(!$abbrev) return;
+    
+        var xmlhttp = new XMLHttpRequest();
+    
+        xmlhttp.onreadystatechange = function(data) {
+            if (xmlhttp.readyState==4 && xmlhttp.status==200)
+            {
+                var tmp = document.createElement('div');
+                tmp.innerHTML = xmlhttp.responseText;
+                var thread = document.querySelector('.thread')
+                var posts = document.querySelectorAll('.post');
+                var posts_i = 1;
+                // проходимся по удаленным постам
+                [].forEach.call(tmp.querySelectorAll('.thread .replypost'), function(p, i, del) {
+                    // вычисляем пост к которому надо добавить удаленный
+                    while(posts[posts_i] && (p.id > posts[posts_i].id)) {posts_i++;}
+                    if(posts[posts_i]) {
+                        thread.insertBefore(p, posts[posts_i]);
+                    } else {
+                        // если все неудаленные посты закончились, то добавляем в конец
+                        thread.appendChild(p);
+                    }
+                });
+            }
+        };
+    
+        xmlhttp.open("GET", $abbrev.href, true);
+        xmlhttp.send(); // подгружаем посты
+    });
 }
 
-addJQuery(main); // El Psy Congroo!
+var script = document.createElement("script");
+script.textContent = "(" + main.toString() + ")();";
+document.body.appendChild(script);
+
