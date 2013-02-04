@@ -27,7 +27,7 @@ function main() {
     || window.location.toString().indexOf('rf/mad') == 0) return;
     
     document.addEventListener('DOMContentLoaded', function() {
-        $abbrev = document.querySelector('.abbrev span a');
+        var $abbrev = document.querySelector('.abbrev span a');
         // а вдруг оп ничего не удалял
         if(!$abbrev) return;
     
